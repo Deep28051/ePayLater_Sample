@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ePayLater Test App</string>
+
+    <!--farm_id, server_id, id, secret-->
+    <string name="image_url" formatted="true">http://farm%1$s.static.flickr.com/%2$s/%3$s_%4$s.jpg</string>
+    <string name="no_result">No Result Available</string>
+</resources>
