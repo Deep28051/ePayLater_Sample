@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClientInstance {
 
-    private const val BASE_URL = "https://api.flickr.com/services/rest/"
+    const val BASE_URL = "https://api.flickr.com/services/rest/"
 
     private var retrofit: Retrofit? = null
 

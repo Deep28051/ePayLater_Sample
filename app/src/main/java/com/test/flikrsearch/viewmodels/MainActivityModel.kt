@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.flikrsearch.AppController
-import com.test.flikrsearch.AppController.Companion.apiServices
 import com.test.flikrsearch.pojo.PhotoItem
 import com.test.flikrsearch.utils.LoadStates
 import com.test.flikrsearch.utils.Utils
@@ -33,7 +32,7 @@ class MainActivityModel : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 try {
 
-                    val response = apiServices.getImages(query, page)
+                    val response = (AppController.context.apiServices).getImages(query, page)
                     if (response.isSuccessful && response.body() != null) {
                         if (page == 1) {
                             nextPage = 2
