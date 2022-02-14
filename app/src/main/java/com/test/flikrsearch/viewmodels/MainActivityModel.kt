@@ -4,13 +4,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.test.flikrsearch.AppController
+import com.test.flikrsearch.pojo.MyResponse
 import com.test.flikrsearch.pojo.PhotoItem
 import com.test.flikrsearch.utils.LoadStates
 import com.test.flikrsearch.utils.Utils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.observers.DisposableSingleObserver
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MainActivityModel : ViewModel() {
 
@@ -29,7 +31,7 @@ class MainActivityModel : ViewModel() {
     fun fetchMovieByQuery(query: String, page: Int = nextPage++) {
         if (Utils.isConnected()) {
             loadingStates.postValue(LoadStates.LOADING)
-            viewModelScope.launch(Dispatchers.IO) {
+            /*viewModelScope.launch(Dispatchers.IO) {
                 try {
 
                     val response = (AppController.context.apiServices).getImages(query, page)
@@ -51,7 +53,36 @@ class MainActivityModel : ViewModel() {
                     loadingStates.postValue(LoadStates.ERROR)
                     Log.e(TAG, "fetchMovieByQuery: error-$e")
                 }
-            }
+            }*/
+            AppController.context.apiServices.getImages(query,page)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(object : DisposableSingleObserver<MyResponse>() {
+
+                    override fun onError(e: Throwable) {
+                        // Network error
+                        loadingStates.postValue(LoadStates.ERROR)
+                        Log.e(TAG, "fetchMovieByQuery: error-$e")
+                    }
+
+                    override fun onSuccess(t: @NonNull MyResponse) {
+                        Log.e(TAG, "onSuccess: response $t")
+
+                        if (page == 1) {
+                            nextPage = 2
+                            mutablePhotos.postValue(ArrayList(t.photos?.photo!!))
+                        } else {
+                            val addAll = mutablePhotos.value
+                            if (addAll != null) {
+                                addAll.addAll(t.photos?.photo!!)
+                                mutablePhotos.postValue(addAll!!)
+                            }
+                        }
+                        loadingStates.postValue(LoadStates.LOADED)
+
+                    }
+
+                })
         } else {
             loadingStates.postValue(LoadStates.ERROR)
             Toast.makeText(AppController.context, "No Internet", Toast.LENGTH_SHORT).show()

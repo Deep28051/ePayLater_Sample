@@ -61,6 +61,11 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.40'
     kapt "com.google.dagger:dagger-compiler:2.40"
 
+    implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
+
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation "com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0"
+
     //implementation "android.arch.lifecycle:extensions:1.1.1"
     //annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
