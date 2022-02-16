@@ -55,7 +55,7 @@ class MainActivityModel : ViewModel() {
                 }
             }*/
             AppController.context.apiServices.getImages(query,page)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(object : DisposableSingleObserver<MyResponse>() {
 
@@ -70,11 +70,14 @@ class MainActivityModel : ViewModel() {
 
                         if (page == 1) {
                             nextPage = 2
+                            //mutablePhotos.value = (ArrayList(t.photos?.photo!!))
                             mutablePhotos.postValue(ArrayList(t.photos?.photo!!))
+                            Log.e(TAG, "onSuccess: page 1" )
                         } else {
                             val addAll = mutablePhotos.value
                             if (addAll != null) {
                                 addAll.addAll(t.photos?.photo!!)
+                                Log.e(TAG, "onSuccess: page $page" )
                                 mutablePhotos.postValue(addAll!!)
                             }
                         }

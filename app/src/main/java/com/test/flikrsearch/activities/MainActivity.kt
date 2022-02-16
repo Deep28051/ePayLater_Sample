@@ -8,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,12 +37,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
         context = this
+
+        binding = DataBindingUtil.setContentView(context,R.layout.activity_main)
 
         viewModel = ViewModelProviders.of(this)[MainActivityModel::class.java]
 
-        setContentView(binding.root)
+        binding.viewModel = viewModel
 
         binding.rvImages.let {
             it.addItemDecoration(
@@ -58,14 +60,17 @@ class MainActivity : AppCompatActivity() {
 
         binding.rvImages.adapter = myImageAdapter
 
+        binding.rvImages.setHasFixedSize(true);
+
         viewModel.mutablePhotos.observe(context) { photos ->
             Log.e(TAG, "Images API - $photos")
             if (photos != null && photos.size > 0) {
                 binding.tvNoResult.visibility = View.GONE
                 list.clear()
                 list.addAll(photos)
-                if (photos.size > oldSize)
+                if (photos.size > oldSize) {
                     myImageAdapter.notifyItemInserted(oldSize)
+                }
                 else
                     myImageAdapter.notifyItemRangeRemoved(0, oldSize)
                 oldSize = photos.size

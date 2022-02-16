@@ -1,9 +1,12 @@
 package com.test.flikrsearch.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.test.flikrsearch.R
@@ -12,6 +15,8 @@ import com.test.flikrsearch.pojo.PhotoItem
 
 class MyImageAdapter(private val context: Context, var myVehicles: List<PhotoItem>) :
     RecyclerView.Adapter<MyImageAdapter.ViewHolder>() {
+
+    private val TAG = "MyImageAdapter"
 
     override fun getItemCount(): Int {
         return myVehicles.size
@@ -31,16 +36,18 @@ class MyImageAdapter(private val context: Context, var myVehicles: List<PhotoIte
         val binding = holder.binding
         val image = myVehicles[position]
 
+        val url = context.getString(
+            R.string.image_url,
+            image.farm.toString(),
+            image.server,
+            image.id,
+            image.secret
+        )
+
+        //binding.url = url
+
         Glide.with(context)
-            .load(
-                context.getString(
-                    R.string.image_url,
-                    image.farm.toString(),
-                    image.server,
-                    image.id,
-                    image.secret
-                )
-            )
+            .load(url)
             .placeholder(R.drawable.place)
             .error(R.drawable.place)
             .into(binding.ivImg)
@@ -49,7 +56,5 @@ class MyImageAdapter(private val context: Context, var myVehicles: List<PhotoIte
         }*/
     }
 
-    class ViewHolder(var binding: LtImageBinding) : RecyclerView.ViewHolder(
-        binding.root
-    )
+    class ViewHolder(var binding: LtImageBinding) : RecyclerView.ViewHolder(binding.root)
 }
